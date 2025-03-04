@@ -1,11 +1,11 @@
-import express from 'express';
-import { ApolloServer } from 'apollo-server-express';
-import cors from 'cors';
-import { baseTypeDefs, studentTypeDefs, courseTypeDefs } from './typedefs/index.js';
-import { studentResolvers, courseResolvers } from './resolvers/index.js';
-import connectDB from './config/db.js';
-import config from './config/config.js';
-import authMiddleware from './middleware/auth.js';
+import express from "express";
+import { ApolloServer } from "apollo-server-express";
+import cors from "cors";
+import { baseTypeDefs, studentTypeDefs, courseTypeDefs } from "./typedefs/index.js";
+import { studentResolvers, courseResolvers } from "./resolvers/index.js";
+import connectDB from "./config/db.js";
+import config from "./config/config.js";
+import authMiddleware from "./middleware/auth.js";
 
 connectDB();
 
@@ -22,13 +22,13 @@ async function startApolloServer() {
     },
     formatError: (error) => {
       console.error(error);
-      
+
       return {
         message: error.message,
         locations: error.locations,
-        path: error.path
+        path: error.path,
       };
-    }
+    },
   });
 
   await server.start();
@@ -41,6 +41,6 @@ async function startApolloServer() {
   });
 }
 
-startApolloServer().catch(error => {
-  console.error(`Something Went Wrong Starting Apollo Server: ${error}`)
+startApolloServer().catch((error) => {
+  console.error(`Something Went Wrong Starting Apollo Server: ${error}`);
 });

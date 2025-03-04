@@ -1,62 +1,67 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-const studentSchema = new mongoose.Schema({
-  studentNumber: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
+const studentSchema = new mongoose.Schema(
+  {
+    studentNumber: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    firstName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    address: {
+      type: String,
+      trim: true,
+    },
+    city: {
+      type: String,
+      trim: true,
+    },
+    phoneNumber: {
+      type: String,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    program: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    courses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      },
+    ],
   },
-  password: {
-    type: String,
-    required: true
+  {
+    timestamps: true,
   },
-  firstName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  lastName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  address: {
-    type: String,
-    trim: true
-  },
-  city: {
-    type: String,
-    trim: true
-  },
-  phoneNumber: {
-    type: String,
-    trim: true
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true
-  },
-  program: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  courses: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Course'
-  }]
-}, {
-  timestamps: true
-});
+);
 
 // ANCHOR: Hash the students password before saving.
-studentSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
+studentSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
     return next();
   }
 
@@ -70,8 +75,8 @@ studentSchema.pre('save', async function(next) {
 });
 
 // ANCHOR: Method to compare if the password is correct with candidatePassword.
-studentSchema.methods.comparePassword = async function(candidatePassword) {
+studentSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-export default mongoose.model('Student', studentSchema);
+export default mongoose.model("Student", studentSchema);
