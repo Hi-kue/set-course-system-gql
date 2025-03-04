@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
-const config = require('./config');
+import mongoose from 'mongoose';
+import config from './config.js';
 
+// TODO: Work on This Function (Not Correct!)
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(config.MONGODB_URI, {
@@ -16,4 +17,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = connectDB;
+export default connectDB;

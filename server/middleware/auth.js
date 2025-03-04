@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-const config = require('../config/config');
-const Student = require('../models/student.model');
+import jwt from 'jsonwebtoken';
+import config from '../config/config.js';
+import Student from '../models/student.model.js';
 
 const authMiddleware = async (req) => {
   const authHeader = req.headers.authorization || '';
@@ -9,7 +9,6 @@ const authMiddleware = async (req) => {
     return { user: null };
   }
 
-  // Check if the header has the format 'Bearer [token]'
   const parts = authHeader.split(' ');
   if (parts.length !== 2 || parts[0] !== 'Bearer') {
     return { user: null };
@@ -19,15 +18,12 @@ const authMiddleware = async (req) => {
 
   try {
     const decoded = jwt.verify(token, config.JWT_SECRET);
-    
-    // Find the student in the database
     const student = await Student.findById(decoded.id);
     
     if (!student) {
       return { user: null };
     }
     
-    // Return the user object to be used in context
     return { 
       user: {
         id: student._id,
@@ -36,9 +32,8 @@ const authMiddleware = async (req) => {
       } 
     };
   } catch (error) {
-    // If token verification fails, return null user
     return { user: null };
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

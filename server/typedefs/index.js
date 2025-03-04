@@ -1,9 +1,12 @@
-const { gql } = require('apollo-server-express');
-const studentTypeDefs = require('./student.typedef');
-const courseTypeDefs = require('./course.typedef');
+import { gql } from 'apollo-server-express';
+import studentTypeDefsModule from './student.typedef.js';
+import courseTypeDefsModule from './course.typedef.js';
+
+export const studentTypeDefs = studentTypeDefsModule;
+export const courseTypeDefs = courseTypeDefsModule;
 
 // NOTE: Base type definitions.
-const baseTypeDefs = gql`
+export const baseTypeDefs = gql`
   type Query {
     _: Boolean
   }
@@ -12,9 +15,3 @@ const baseTypeDefs = gql`
     _: Boolean
   }
 `;
-
-module.exports = [
-  baseTypeDefs,
-  studentTypeDefs,
-  courseTypeDefs
-];

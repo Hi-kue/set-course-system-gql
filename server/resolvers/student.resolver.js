@@ -1,8 +1,8 @@
-const jwt = require('jsonwebtoken');
-const Student = require('../models/student.model');
-const Course = require('../models/course.model');
-const config = require('../config/config');
-const { AuthenticationError, UserInputError, ForbiddenError } = require('apollo-server-express');
+import jwt from 'jsonwebtoken';
+import Student from '../models/student.model.js';
+import Course from '../models/course.model.js';
+import config from '../config/config.js';
+import { AuthenticationError, UserInputError, ForbiddenError } from 'apollo-server-express';
 
 // Generate JWT token
 const generateToken = (student) => {
@@ -249,4 +249,4 @@ const studentResolvers = {
   }
 };
 
-module.exports = studentResolvers;
+export default studentResolvers;

@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+import { gql } from 'apollo-server-express';
 
 const studentTypeDefs = gql`
   type Student {
@@ -66,4 +66,4 @@ const studentTypeDefs = gql`
   }
 `;
 
-module.exports = studentTypeDefs;
+export default studentTypeDefs;

@@ -1,7 +1,5 @@
-const studentResolvers = require('./student.resolver');
-const courseResolvers = require('./course.resolver');
+import studentResolversModule from './student.resolver.js';
+import courseResolversModule from './course.resolver.js';
 
-module.exports = [
-  studentResolvers,
-  courseResolvers
-];
+export const studentResolvers = studentResolversModule;
+export const courseResolvers = courseResolversModule;

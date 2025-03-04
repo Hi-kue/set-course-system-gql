@@ -1,6 +1,6 @@
-const Course = require('../models/course.model');
-const Student = require('../models/student.model');
-const { AuthenticationError, UserInputError } = require('apollo-server-express');
+import Course from '../models/course.model.js';
+import Student from '../models/student.model.js';
+import { AuthenticationError, UserInputError } from 'apollo-server-express';
 
 const courseResolvers = {
   Query: {
@@ -101,7 +101,6 @@ const courseResolvers = {
     }
   },
 
-  // Resolvers for the Course type.
   Course: {
     students: async (parent) => {
       if (parent.students) {
@@ -115,4 +114,4 @@ const courseResolvers = {
   }
 };
 
-module.exports = courseResolvers;
+export default courseResolvers;
