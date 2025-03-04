@@ -1,9 +1,9 @@
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import cors from "cors";
-import { baseTypeDefs, studentTypeDefs, courseTypeDefs } from "./typedefs/index.js";
-import { studentResolvers, courseResolvers } from "./resolvers/index.js";
-import connectDB from "./config/db.js";
+import { baseTypeDefs, studentTypeDefs, courseTypeDefs, adminTypeDefs } from "./typedefs/index.js";
+import { studentResolvers, courseResolvers, adminResolvers } from "./resolvers/index.js";
+import { connectDB } from "./config/db.js";
 import config from "./config/config.js";
 import authMiddleware from "./middleware/auth.js";
 
@@ -15,8 +15,8 @@ app.use(express.json());
 
 async function startApolloServer() {
   const server = new ApolloServer({
-    typeDefs: [baseTypeDefs, studentTypeDefs, courseTypeDefs],
-    resolvers: [studentResolvers, courseResolvers],
+    typeDefs: [baseTypeDefs, studentTypeDefs, courseTypeDefs, adminTypeDefs],
+    resolvers: [studentResolvers, courseResolvers, adminResolvers],
     context: async ({ req }) => {
       return await authMiddleware(req);
     },

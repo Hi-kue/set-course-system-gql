@@ -4,7 +4,6 @@ import jwtDecode from 'jwt-decode';
 
 export const AuthContext = createContext();
 
-// GraphQL mutations
 const LOGIN_MUTATION = gql`
   mutation Login($input: LoginInput!) {
     login(input: $input) {
@@ -15,6 +14,21 @@ const LOGIN_MUTATION = gql`
         lastName
         email
         studentNumber
+      }
+    }
+  }
+`;
+
+const ADMIN_LOGIN_MUTATION = gql`
+  mutation AdminLogin($input: AdminLoginInput!) {
+    adminLogin(input: $input) {
+      token
+      admin {
+        id
+        username
+        email
+        firstName
+        lastName
       }
     }
   }
@@ -42,27 +56,34 @@ export const AuthProvider = ({ children }) => {
 
   const [loginMutation] = useMutation(LOGIN_MUTATION);
   const [registerMutation] = useMutation(REGISTER_MUTATION);
+  const [adminLoginMutation] = useMutation(ADMIN_LOGIN_MUTATION);
 
-  // Check for token on load
   useEffect(() => {
     const checkToken = async () => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
           const decodedToken = jwtDecode(token);
+          console.log('Decoded token in client:', decodedToken);
           
-          // Check if token is expired
           const currentTime = Date.now() / 1000;
           if (decodedToken.exp < currentTime) {
+            console.log('Token expired');
             localStorage.removeItem('token');
             setUser(null);
           } else {
-            // If token is valid, set the user
-            setUser({
+            // Create user object with proper admin flag
+            const userData = {
               id: decodedToken.id,
               email: decodedToken.email,
-              studentNumber: decodedToken.studentNumber
-            });
+              username: decodedToken.username || null,
+              studentNumber: decodedToken.studentNumber || null,
+              isAdmin: decodedToken.isAdmin === true,
+              role: decodedToken.role || (decodedToken.isAdmin ? 'admin' : 'student')
+            };
+            
+            console.log('Setting user data:', userData);
+            setUser(userData);
           }
         }
       } catch (err) {
@@ -77,7 +98,6 @@ export const AuthProvider = ({ children }) => {
     checkToken();
   }, []);
 
-  // Login function
   const login = async (email, password) => {
     try {
       setError(null);
@@ -97,7 +117,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Register function
   const register = async (studentData) => {
     try {
       setError(null);
@@ -117,7 +136,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout function
+  const adminLogin = async (email, password) => {
+    try {
+      setError(null);
+      const { data } = await adminLoginMutation({ 
+        variables: { 
+          input: { email, password } 
+        } 
+      });
+      
+      const { token, admin } = data.adminLogin;
+      localStorage.setItem('token', token);
+      setUser({ ...admin, isAdmin: true }); // Set isAdmin flag
+      return { success: true };
+    } catch (err) {
+      setError(err.message || 'Admin login failed');
+      return { success: false, error: err.message };
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
@@ -128,10 +165,12 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         isAuthenticated: !!user,
+        isAdmin: user?.isAdmin || false,
         loading,
         error,
         login,
         register,
+        adminLogin,
         logout
       }}
     >
