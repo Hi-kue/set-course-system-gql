@@ -14,11 +14,11 @@ export const connectDB = async () => {
   try {
     const conn = await mongoose.connect(config.MONGODB_URI, mongooseOptions);
     console.info(
-      `Mongo database server: ${conn.connection.host}:${conn.connection.port}/${conn.connection.name}`,
+      `Mongo Database Server: ${conn.connection.host}:${conn.connection.port}/${conn.connection.name}`,
     );
     return conn;
   } catch (error) {
-    console.error(`Error connecting to MongoDB: ${error.message}`);
+    console.error(`Error Connecting to Mongo Server: ${error.message}`);
     process.exit(1);
   }
 };
