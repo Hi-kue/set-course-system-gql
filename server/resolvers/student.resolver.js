@@ -3,6 +3,7 @@ import Student from "../models/student.model.js";
 import Course from "../models/course.model.js";
 import config from "../config/config.js";
 import { AuthenticationError, UserInputError, ForbiddenError } from "apollo-server-express";
+import { logger } from "../config/logger.js";
 
 const generateToken = (student) => {
   return jwt.sign(
@@ -127,7 +128,13 @@ const studentResolvers = {
         throw new AuthenticationError("You must be logged in to add a course");
       }
 
-      if (context.user.id !== studentId && !context.user.isAdmin) {
+      logger.info(`
+        Context user ID: ${context.user.id}, ${typeof context.user.id}
+        Student ID from request: ${studentId}, ${typeof studentId}
+        Is admin? ${context.user.isAdmin}, ${typeof context.user.isAdmin}
+        `)
+      
+      if (context.user.id.toString() !== studentId.toString() && !context.user.isAdmin) {
         throw new ForbiddenError("You can only modify your own courses");
       }
 
@@ -141,7 +148,7 @@ const studentResolvers = {
         throw new UserInputError("Course not found");
       }
 
-      if (student.courses.includes(courseId)) {
+      if (student.courses.some(cId => cId.toString() === courseId)) {
         throw new UserInputError("Student is already registered for this course");
       }
 
@@ -158,7 +165,7 @@ const studentResolvers = {
         throw new AuthenticationError("You must be logged in to remove a course");
       }
 
-      if (context.user.id !== studentId && !context.user.isAdmin) {
+      if (context.user.id.toString() !== studentId.toString() && !context.user.isAdmin) {
         throw new ForbiddenError("You can only modify your own courses");
       }
 
@@ -172,14 +179,14 @@ const studentResolvers = {
         throw new UserInputError("Course not found");
       }
 
-      if (!student.courses.includes(courseId)) {
+      if (!student.courses.some(cId => cId.toString() === courseId)) {
         throw new UserInputError("Student is not registered for this course");
       }
 
-      student.courses = student.courses.filter((courseId) => courseId.toString() !== courseId);
+      student.courses = student.courses.filter((cId) => cId.toString() !== courseId);
       await student.save();
 
-      course.students = course.students.filter((student) => student.toString() !== studentId);
+      course.students = course.students.filter((sId) => sId.toString() !== studentId);
       await course.save();
 
       return await Student.findById(studentId).populate("courses");

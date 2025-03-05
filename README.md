@@ -1,137 +1,209 @@
 # Student Course Registration System
 
-A complete web application using MERN stack and GraphQL, allowing students to register for courses, update course information, and manage their profiles.
+A full-stack web application that provides a robust solution for academic course registration, enabling students to register for courses, update their profiles, and allows administrators to manage course information and student enrollments.
 
-## Project Structure
+## Overview
 
-### Backend (GraphQL API)
+This system is built using modern web technologies including the MERN stack (MongoDB, Express, React, Node.js) with GraphQL API integration, providing a seamless and efficient user experience for both students and administrators.
 
-The backend is built with Express, GraphQL, and MongoDB, with the following structure:
+## Key Features
 
-```
-server/
-├── config/             # Configuration files
-│   ├── config.js       # Environment variables and constants
-│   └── db.js           # MongoDB connection setup
-├── middleware/         # Express and GraphQL middleware
-│   └── auth.js         # JWT authentication middleware
-├── models/             # MongoDB models
-│   ├── course.model.js # Course schema and model
-│   └── student.model.js# Student schema and model
-├── resolvers/          # GraphQL resolvers
-│   ├── course.resolver.js # Course-related resolvers
-│   ├── index.js        # Combine all resolvers
-│   └── student.resolver.js # Student-related resolvers
-├── typedefs/           # GraphQL type definitions
-│   ├── course.typedef.js # Course-related type definitions
-│   ├── index.js        # Combine all type definitions
-│   └── student.typedef.js # Student-related type definitions
-├── .env                # Environment variables
-├── package.json        # Dependencies and scripts
-└── server.js           # Main entry point
-```
+### Student Features
 
-### Frontend (React)
+- **Account Management**
+  - Self-registration with full profile information
+  - Secure authentication using JWT tokens
+  - Profile management to update personal details
 
-The frontend will be built with React, using functional components and hooks:
+- **Course Management**
+  - Browse available courses with detailed information
+  - Register for courses with real-time enrollment updates
+  - View enrolled courses with course details
+  - Drop courses with automatic system updates
 
-```
-client/
-├── src/
-│   ├── components/     # React components
-│   ├── context/        # React context (auth, etc.)
-│   ├── hooks/          # Custom React hooks
-│   ├── pages/          # Page components
-│   ├── App.js          # Main App component
-│   ├── index.js        # React entry point
-├── public/             # Static assets
-└── package.json        # Dependencies and scripts
-```
+### Administrator Features
 
-## Features
+- **User Management**
+  - Create and manage student accounts
+  - Create and manage admin accounts
+  - View detailed student information
 
-- **Student Management**:
-  - Registration and Login
-  - Profile management
-  - Course registration
+- **Course Administration**
+  - Create new course offerings
+  - Update course details (name, section, semester)
+  - Manage student enrollments
+  - Delete courses from the system
 
-- **Course Management**:
-  - Add, update, and delete courses
-  - View course details
-  - List students in a course
+- **System Overview**
+  - Dashboard with key statistics
+  - Comprehensive listing of all courses and students
+  - Detailed views for individual records
 
-- **Authentication**:
-  - JWT-based authentication
-  - Protected routes
+## Technical Architecture
+
+### Backend Architecture
+
+The backend is built with Node.js and Express, implementing a GraphQL API using Apollo Server for efficient data querying and manipulation. The system uses MongoDB for data persistence with Mongoose as the ODM (Object Document Mapper).
+
+- **Authentication System**
+  - JWT (JSON Web Tokens) for secure authentication
+  - Role-based access control (Student vs Administrator)
+  - Password encryption for secure storage
+
+- **GraphQL API**
+  - Strongly typed schema definitions
+  - Efficient resolvers for data operations
+  - Separate type definitions for courses, students, and administrators
+
+- **Data Models**
+  - Course model with relevant academic information
+  - Student model with profile and enrollment data
+  - Admin model with administrative privileges
+  - Relationship management between models
+
+### Frontend Architecture
+
+The frontend is built with React, providing a modern, responsive user interface that communicates with the GraphQL backend. The application uses a component-based architecture with hooks for state management and side effects.
+
+- **Component Architecture**
+  - Reusable UI components for consistency
+  - Page components for different application views
+  - Layout components for consistent page structure
+
+- **State Management**
+  - React Context API for global state (auth, etc.)
+  - Custom hooks for reusable logic
+  - Apollo Client for GraphQL state management
+
+- **Routing & Navigation**
+  - React Router for declarative routing
+  - Protected routes based on authentication state
+  - Role-based route access control
+
+- **UI Framework**
+  - React Bootstrap for responsive layouts
+  - Custom styling for enhanced user experience
+  - Form validation and error handling
+
+## GraphQL API
+
+The GraphQL API provides a flexible interface for data operations, with the following key queries and mutations:
+
+### Queries
+
+- **Student Data**
+  - `students`: Retrieve all students
+  - `student(id)`: Get student by ID
+
+- **Course Data**
+  - `courses`: Retrieve all courses
+  - `course(id)`: Get course by ID
+
+- **Relationship Data**
+  - `coursesByStudent`: Get courses for a specific student
+  - `studentsByCourse`: Get students enrolled in a specific course
+
+### Mutations
+
+- **User Account Operations**
+  - `createStudent`: Register a new student
+  - `createAdmin`: Create a new administrator account
+  - `login`: Student authentication
+  - `adminLogin`: Administrator authentication
+  - `updateStudent`: Update student information
+
+- **Course Operations**
+  - `createCourse`: Create a new course
+  - `updateCourse`: Update course information
+  - `deleteCourse`: Remove a course from the system
+
+- **Enrollment Operations**
+  - `addCourseToStudent`: Register a student for a course
+  - `removeCourseFromStudent`: Drop a course for a student
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js and npm
-- MongoDB
+- Node.js (v14+) and npm
+- MongoDB (local or Atlas cloud database)
 
 ### Installation
 
 1. Clone the repository
 2. Install server dependencies:
+
    ```bash
    cd server
    npm install
    ```
+
 3. Install client dependencies:
+
    ```bash
    cd client
    npm install
+   ```
+
+### Configuration
+
+1. Create a `.env` file in the server directory with the following variables:
+
+   ```bash
+   PORT=4000
+   NODE_ENV=development
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret_key
    ```
 
 ### Running the Application
 
-1. Start the MongoDB server
-2. Start the backend server:
+1. Start the backend server:
+
    ```bash
    cd server
    npm run dev
    ```
-3. Start the frontend development server:
+
+2. Start the frontend development server:
+
    ```bash
    cd client
    npm run dev
    ```
 
-## API Documentation
+## Code Quality
 
-The GraphQL API provides the following operations:
+This project uses Biome.js for code formatting and linting to ensure consistent code style and quality. Run the following commands from the client directory:
 
-### Queries
-
-- `students`: Get all students
-- `student`: Get student by ID
-- `courses`: Get all courses
-- `course`: Get course by ID
-- `coursesByStudent`: Get courses for a specific student
-- `studentsByCourse`: Get students for a specific course
-
-### Mutations
-
-- `createStudent`: Register a new student
-- `login`: Student login
-- `updateStudent`: Update student information
-- `createCourse`: Create a new course
-- `updateCourse`: Update course information
-- `addCourseToStudent`: Register a student for a course
-- `removeCourseFromStudent`: Drop a course for a student
+```bash
+npm run biome:format  # Format code
+npm run biome:lint    # Lint code
+npm run biome:check   # Check for issues
+```
 
 ## Technologies Used
 
-- **Backend**:
-  - Node.js and Express
-  - GraphQL with Apollo Server
-  - MongoDB with Mongoose
-  - JWT for authentication
+### Backend
 
-- **Frontend**:
-  - React with hooks and functional components
-  - Apollo Client for GraphQL
-  - React Router for navigation
-  - React Bootstrap for UI components
+- **Node.js & Express**: Server framework
+- **GraphQL & Apollo Server**: API layer
+- **MongoDB & Mongoose**: Database and ODM
+- **JWT**: Authentication
+- **bcrypt**: Password hashing
+
+### Frontend
+
+- **React**: UI library with hooks and functional components
+- **Apollo Client**: GraphQL client
+- **React Router**: Navigation and routing
+- **React Bootstrap**: UI component library
+- **Biome.js**: Code formatting and linting
+
+## Future Enhancements
+
+- Email notifications for enrollment events
+- Advanced search and filtering capabilities
+- Student grade tracking
+- Course prerequisites and validation
+- Calendar integration for class schedules

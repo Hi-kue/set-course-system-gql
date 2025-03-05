@@ -164,7 +164,9 @@ const CourseDetailsPage = () => {
     }
 
     try {
-      console.log("Enrolling with user ID:", user.id);
+      console.log("Full user object:", user);
+      console.log("Enrolling with user ID:", user.id, typeof user.id);
+      console.log("Course ID:", id, typeof id);
       await addCourseToStudent({
         variables: {
           studentId: user.id,

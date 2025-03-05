@@ -86,6 +86,7 @@ export const AuthProvider = ({ children }) => {
               role: decodedToken.role || (decodedToken.isAdmin ? "admin" : "student"),
             };
 
+            console.log("Decoded token user ID:", decodedToken.id, typeof decodedToken.id);
             console.log("Setting user data from token:", userData);
             setUser(userData);
           }
@@ -145,7 +146,6 @@ export const AuthProvider = ({ children }) => {
       const { token, student } = data.createStudent;
       localStorage.setItem("token", token);
 
-      // Store user with authentication metadata
       const userData = {
         ...student,
         isAdmin: false,

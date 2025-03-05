@@ -34,7 +34,7 @@ const NavBar = () => {
             </Nav.Link>
           </Nav>
           <div className="ms-3 d-flex align-items-center">
-            {user && <span className="me-3 text-secondary">Welcome, {user.studentNumber}</span>}
+            {user && <span className="me-3 text-secondary">Welcome, {user.isAdmin ? `${user.firstName} ${user.lastName}` : user.studentNumber}</span>}
             <Button variant="outline-danger" size="sm" onClick={handleLogout}>
               Logout
             </Button>

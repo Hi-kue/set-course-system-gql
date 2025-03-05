@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import Admin from "../models/admin.model.js";
 import config from "../config/config.js";
 import { AuthenticationError, UserInputError, ForbiddenError } from "apollo-server-express";
+import { logger } from "../config/logger.js";
 
 const generateAdminToken = (admin) => {
   const payload = {
@@ -12,7 +13,7 @@ const generateAdminToken = (admin) => {
     role: "admin",
   };
 
-  console.log("Generating admin token with payload:", payload);
+  logger.log("Generating admin token with payload:", payload);
 
   return jwt.sign(payload, config.JWT_SECRET, { expiresIn: config.JWT_EXPIRES_IN });
 };
