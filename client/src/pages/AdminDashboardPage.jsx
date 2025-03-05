@@ -1,7 +1,7 @@
-import React from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import React from "react";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const AdminDashboardPage = () => {
   const { user } = useAuth();
@@ -35,7 +35,7 @@ const AdminDashboardPage = () => {
             <Card.Body>
               <Card.Title>Courses</Card.Title>
               <Card.Text>Manage course listings, details, and enrollment.</Card.Text>
-              <Link to="/courses">
+              <Link to="/admin/courses">
                 <Button variant="primary">Manage Courses</Button>
               </Link>
             </Card.Body>
@@ -47,7 +47,7 @@ const AdminDashboardPage = () => {
             <Card.Body>
               <Card.Title>Students</Card.Title>
               <Card.Text>View and manage student accounts and registrations.</Card.Text>
-              <Link to="/students">
+              <Link to="/admin/students">
                 <Button variant="primary">Manage Students</Button>
               </Link>
             </Card.Body>
@@ -67,32 +67,6 @@ const AdminDashboardPage = () => {
                   <Button variant="outline-primary">Create Admin</Button>
                 </Link>
               </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-
-      <Row className="mt-4">
-        <Col md={6} className="mb-4">
-          <Card className="h-100">
-            <Card.Body>
-              <Card.Title>Reports</Card.Title>
-              <Card.Text>Generate and view reports on course enrollments and student data.</Card.Text>
-              <Link to="/admin/reports">
-                <Button variant="primary">View Reports</Button>
-              </Link>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        <Col md={6} className="mb-4">
-          <Card className="h-100">
-            <Card.Body>
-              <Card.Title>System Settings</Card.Title>
-              <Card.Text>Configure system settings and parameters.</Card.Text>
-              <Link to="/admin/settings">
-                <Button variant="primary">System Settings</Button>
-              </Link>
             </Card.Body>
           </Card>
         </Col>

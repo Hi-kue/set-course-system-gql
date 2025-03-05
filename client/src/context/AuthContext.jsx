@@ -1,9 +1,10 @@
-import { createContext, useState, useEffect } from 'react';
-import { useMutation, gql } from '@apollo/client';
-import jwtDecode from 'jwt-decode';
+import { createContext, useState, useEffect } from "react";
+import { useMutation, gql } from "@apollo/client";
+import jwtDecode from "jwt-decode";
 
 export const AuthContext = createContext();
 
+// Mutation: Login
 const LOGIN_MUTATION = gql`
   mutation Login($input: LoginInput!) {
     login(input: $input) {
@@ -19,6 +20,7 @@ const LOGIN_MUTATION = gql`
   }
 `;
 
+// Mutation: AdminLogin
 const ADMIN_LOGIN_MUTATION = gql`
   mutation AdminLogin($input: AdminLoginInput!) {
     adminLogin(input: $input) {
@@ -34,6 +36,7 @@ const ADMIN_LOGIN_MUTATION = gql`
   }
 `;
 
+// Mutation: Register
 const REGISTER_MUTATION = gql`
   mutation CreateStudent($input: CreateStudentInput!) {
     createStudent(input: $input) {
@@ -61,35 +64,39 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkToken = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (token) {
           const decodedToken = jwtDecode(token);
-          console.log('Decoded token in client:', decodedToken);
-          
+          console.log("Decoded token in client:", decodedToken);
+
           const currentTime = Date.now() / 1000;
           if (decodedToken.exp < currentTime) {
-            console.log('Token expired');
-            localStorage.removeItem('token');
+            console.log("Token expired");
+            localStorage.removeItem("token");
             setUser(null);
           } else {
-            // Create user object with proper admin flag
             const userData = {
               id: decodedToken.id,
               email: decodedToken.email,
               username: decodedToken.username || null,
+              firstName: decodedToken.firstName || "",
+              lastName: decodedToken.lastName || "",
               studentNumber: decodedToken.studentNumber || null,
               isAdmin: decodedToken.isAdmin === true,
-              role: decodedToken.role || (decodedToken.isAdmin ? 'admin' : 'student')
+              role: decodedToken.role || (decodedToken.isAdmin ? "admin" : "student"),
             };
-            
-            console.log('Setting user data:', userData);
+
+            console.log("Setting user data from token:", userData);
             setUser(userData);
           }
+        } else {
+          setLoading(false);
         }
       } catch (err) {
-        console.error('Token validation error:', err);
-        localStorage.removeItem('token');
+        console.error("Token validation error:", err);
+        localStorage.removeItem("token");
         setUser(null);
+        setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -101,18 +108,27 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError(null);
-      const { data } = await loginMutation({ 
-        variables: { 
-          input: { email, password } 
-        } 
+      const { data } = await loginMutation({
+        variables: {
+          input: { email, password },
+        },
       });
-      
+
       const { token, student } = data.login;
-      localStorage.setItem('token', token);
-      setUser(student);
+      localStorage.setItem("token", token);
+
+      const userData = {
+        ...student,
+        isAdmin: false,
+        role: "student",
+      };
+
+      console.log("Setting user data after student login:", userData);
+      setUser(userData);
       return { success: true };
     } catch (err) {
-      setError(err.message || 'Login failed');
+      console.error("Login error:", err);
+      setError(err.message || "Login failed");
       return { success: false, error: err.message };
     }
   };
@@ -120,18 +136,28 @@ export const AuthProvider = ({ children }) => {
   const register = async (studentData) => {
     try {
       setError(null);
-      const { data } = await registerMutation({ 
-        variables: { 
-          input: studentData
-        } 
+      const { data } = await registerMutation({
+        variables: {
+          input: studentData,
+        },
       });
-      
+
       const { token, student } = data.createStudent;
-      localStorage.setItem('token', token);
-      setUser(student);
+      localStorage.setItem("token", token);
+
+      // Store user with authentication metadata
+      const userData = {
+        ...student,
+        isAdmin: false,
+        role: "student",
+      };
+
+      console.log("Setting user data after student registration:", userData);
+      setUser(userData);
       return { success: true };
     } catch (err) {
-      setError(err.message || 'Registration failed');
+      console.error("Registration error:", err);
+      setError(err.message || "Registration failed");
       return { success: false, error: err.message };
     }
   };
@@ -139,24 +165,33 @@ export const AuthProvider = ({ children }) => {
   const adminLogin = async (email, password) => {
     try {
       setError(null);
-      const { data } = await adminLoginMutation({ 
-        variables: { 
-          input: { email, password } 
-        } 
+      const { data } = await adminLoginMutation({
+        variables: {
+          input: { email, password },
+        },
       });
-      
+
       const { token, admin } = data.adminLogin;
-      localStorage.setItem('token', token);
-      setUser({ ...admin, isAdmin: true }); // Set isAdmin flag
+      localStorage.setItem("token", token);
+
+      const userData = {
+        ...admin,
+        isAdmin: true,
+        role: "admin",
+      };
+
+      console.log("Setting user data after admin login:", userData);
+      setUser(userData);
       return { success: true };
     } catch (err) {
-      setError(err.message || 'Admin login failed');
+      console.error("Admin login error:", err);
+      setError(err.message || "Admin login failed");
       return { success: false, error: err.message };
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
   };
 
@@ -171,7 +206,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         adminLogin,
-        logout
+        logout,
       }}
     >
       {children}

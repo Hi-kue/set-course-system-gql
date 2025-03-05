@@ -1,7 +1,7 @@
-import { Outlet } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
-import NavBar from './NavBar';
-import Footer from './Footer';
+import { Outlet } from "react-router-dom";
+import { Container } from "react-bootstrap";
+import NavBar from "./NavBar";
+import Footer from "./Footer";
 
 const MainLayout = () => {
   return (

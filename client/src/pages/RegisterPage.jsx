@@ -1,6 +1,6 @@
-import React from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
-import RegisterForm from '../components/auth/RegisterForm';
+import React from "react";
+import { Container, Row, Col, Card } from "react-bootstrap";
+import RegisterForm from "../components/auth/RegisterForm";
 
 const RegisterPage = () => {
   return (

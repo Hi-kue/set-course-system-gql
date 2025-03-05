@@ -4,10 +4,15 @@ import Course from "../models/course.model.js";
 import config from "../config/config.js";
 import { AuthenticationError, UserInputError, ForbiddenError } from "apollo-server-express";
 
-// Generate JWT token
 const generateToken = (student) => {
   return jwt.sign(
-    { id: student.id, email: student.email, studentNumber: student.studentNumber },
+    { 
+      id: student.id, 
+      email: student.email, 
+      studentNumber: student.studentNumber,
+      isAdmin: false,
+      role: 'student'
+    },
     config.JWT_SECRET,
     { expiresIn: config.JWT_EXPIRES_IN },
   );
@@ -19,12 +24,22 @@ const studentResolvers = {
       if (!context.user) {
         throw new AuthenticationError("You must be logged in to view students");
       }
-      return await Student.find().populate("courses");
+      
+      if (context.user.isAdmin) {
+        return await Student.find().populate("courses");
+      } else {
+        return await Student.find({_id: context.user.id}).populate("courses");
+      }
     },
     student: async (_, { id }, context) => {
       if (!context.user) {
         throw new AuthenticationError("You must be logged in to view student details");
       }
+      
+      if (!context.user.isAdmin && context.user.id !== id) {
+        throw new ForbiddenError("You can only view your own student details");
+      }
+      
       return await Student.findById(id).populate("courses");
     },
     studentByEmail: async (_, { email }, context) => {
@@ -49,7 +64,6 @@ const studentResolvers = {
   },
   Mutation: {
     createStudent: async (_, { input }) => {
-      // Check if student with email or student number already exists
       const existingStudent = await Student.findOne({
         $or: [{ email: input.email }, { studentNumber: input.studentNumber }],
       });
@@ -73,7 +87,6 @@ const studentResolvers = {
         throw new AuthenticationError("You must be logged in to update a student");
       }
 
-      // Only allow students to update their own profile or admins
       if (context.user.id !== id && !context.user.isAdmin) {
         throw new ForbiddenError("You can only update your own profile");
       }
@@ -95,7 +108,6 @@ const studentResolvers = {
         throw new AuthenticationError("You must be logged in to delete a student");
       }
 
-      // Only allow students to delete their own profile or admins
       if (context.user.id !== id && !context.user.isAdmin) {
         throw new ForbiddenError("You can only delete your own profile");
       }
@@ -106,7 +118,6 @@ const studentResolvers = {
         throw new UserInputError("Student not found");
       }
 
-      // Remove student from all courses
       await Course.updateMany({ students: id }, { $pull: { students: id } });
 
       return true;
@@ -116,7 +127,6 @@ const studentResolvers = {
         throw new AuthenticationError("You must be logged in to add a course");
       }
 
-      // Only allow students to modify their own courses or admins
       if (context.user.id !== studentId && !context.user.isAdmin) {
         throw new ForbiddenError("You can only modify your own courses");
       }
@@ -131,16 +141,13 @@ const studentResolvers = {
         throw new UserInputError("Course not found");
       }
 
-      // Check if student is already registered for the course
       if (student.courses.includes(courseId)) {
         throw new UserInputError("Student is already registered for this course");
       }
 
-      // Add course to student
       student.courses.push(courseId);
       await student.save();
 
-      // Add student to course
       course.students.push(studentId);
       await course.save();
 
@@ -151,7 +158,6 @@ const studentResolvers = {
         throw new AuthenticationError("You must be logged in to remove a course");
       }
 
-      // Only allow students to modify their own courses or admins
       if (context.user.id !== studentId && !context.user.isAdmin) {
         throw new ForbiddenError("You can only modify your own courses");
       }
@@ -166,16 +172,13 @@ const studentResolvers = {
         throw new UserInputError("Course not found");
       }
 
-      // Check if student is registered for the course
       if (!student.courses.includes(courseId)) {
         throw new UserInputError("Student is not registered for this course");
       }
 
-      // Remove course from student
       student.courses = student.courses.filter((courseId) => courseId.toString() !== courseId);
       await student.save();
 
-      // Remove student from course
       course.students = course.students.filter((student) => student.toString() !== studentId);
       await course.save();
 
@@ -184,13 +187,11 @@ const studentResolvers = {
     login: async (_, { input }) => {
       const { email, password } = input;
 
-      // Find student by email
       const student = await Student.findOne({ email });
       if (!student) {
         throw new AuthenticationError("Invalid email or password");
       }
 
-      // Check password
       const isMatch = await student.comparePassword(password);
       if (!isMatch) {
         throw new AuthenticationError("Invalid email or password");
@@ -213,13 +214,11 @@ const studentResolvers = {
         throw new UserInputError("Student not found");
       }
 
-      // Verify current password
       const isMatch = await student.comparePassword(currentPassword);
       if (!isMatch) {
         throw new AuthenticationError("Current password is incorrect");
       }
 
-      // Update password
       student.password = newPassword;
       await student.save();
 

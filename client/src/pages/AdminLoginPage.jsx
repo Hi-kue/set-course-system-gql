@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState } from "react";
+import { Container, Row, Col, Card, Form, Button, Alert } from "react-bootstrap";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const AdminLoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { adminLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
-    
+
     try {
       await adminLogin(email, password);
-      navigate('/admin/dashboard');
+      navigate("/admin/dashboard");
     } catch (err) {
-      setError(err.message || 'Failed to login. Please check your credentials.');
+      setError(err.message || "Failed to login. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -33,9 +33,9 @@ const AdminLoginPage = () => {
           <Card>
             <Card.Body>
               <h2 className="text-center mb-4">Admin Login</h2>
-              
+
               {error && <Alert variant="danger">{error}</Alert>}
-              
+
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="email">
                   <Form.Label>Email address</Form.Label>
@@ -47,7 +47,7 @@ const AdminLoginPage = () => {
                     required
                   />
                 </Form.Group>
-                
+
                 <Form.Group className="mb-3" controlId="password">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
@@ -58,17 +58,12 @@ const AdminLoginPage = () => {
                     required
                   />
                 </Form.Group>
-                
-                <Button 
-                  variant="primary" 
-                  type="submit" 
-                  className="w-100"
-                  disabled={loading}
-                >
-                  {loading ? 'Logging in...' : 'Login'}
+
+                <Button variant="primary" type="submit" className="w-100" disabled={loading}>
+                  {loading ? "Logging in..." : "Login"}
                 </Button>
               </Form>
-              
+
               <div className="text-center mt-3">
                 <Link to="/login">Student Login</Link>
               </div>

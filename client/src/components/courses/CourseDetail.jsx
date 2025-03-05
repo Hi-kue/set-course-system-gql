@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { useQuery, useMutation, gql } from '@apollo/client';
-import { Card, Button, Row, Col, Form, Alert, Spinner, Table, Badge, Modal } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { Card, Button, Row, Col, Form, Alert, Spinner, Table, Badge, Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
+// Query: GetCourse
 const GET_COURSE = gql`
   query GetCourse($id: ID!) {
     course(id: $id) {
@@ -23,6 +24,7 @@ const GET_COURSE = gql`
   }
 `;
 
+// Mutation: UpdateCourse
 const UPDATE_COURSE = gql`
   mutation UpdateCourse($id: ID!, $input: UpdateCourseInput!) {
     updateCourse(id: $id, input: $input) {
@@ -35,6 +37,7 @@ const UPDATE_COURSE = gql`
   }
 `;
 
+// Mutation: DeleteCourse
 const DELETE_COURSE = gql`
   mutation DeleteCourse($id: ID!) {
     deleteCourse(id: $id)
@@ -45,73 +48,71 @@ const CourseDetail = ({ courseId }) => {
   const [editing, setEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [formData, setFormData] = useState({
-    courseName: '',
-    section: '',
-    semester: ''
+    courseName: "",
+    section: "",
+    semester: "",
   });
-  const [updateError, setUpdateError] = useState('');
-  const [updateSuccess, setUpdateSuccess] = useState('');
-  
+  const [updateError, setUpdateError] = useState("");
+  const [updateSuccess, setUpdateSuccess] = useState("");
+
   const navigate = useNavigate();
-  
+
   const { loading, error, data, refetch } = useQuery(GET_COURSE, {
     variables: { id: courseId },
     onCompleted: (data) => {
-      // Initialize form data with existing course data
       setFormData({
         courseName: data.course.courseName,
         section: data.course.section,
-        semester: data.course.semester
+        semester: data.course.semester,
       });
-    }
+    },
   });
-  
+
   const [updateCourse, { loading: updating }] = useMutation(UPDATE_COURSE, {
     onCompleted: () => {
-      setUpdateSuccess('Course updated successfully!');
+      setUpdateSuccess("Course updated successfully!");
       setEditing(false);
-      // Clear success message after a few seconds
       setTimeout(() => {
-        setUpdateSuccess('');
+        setUpdateSuccess("");
       }, 5000);
     },
     onError: (error) => {
-      setUpdateError(error.message || 'Failed to update course');
-    }
+      setUpdateError(error.message || "Failed to update course");
+    },
   });
-  
+
   const [deleteCourse, { loading: deleting }] = useMutation(DELETE_COURSE, {
     onCompleted: () => {
-      navigate('/courses', { state: { message: 'Course deleted successfully!' } });
+      navigate("/courses", { state: { message: "Course deleted successfully!" } });
     },
     onError: (error) => {
-      setUpdateError(error.message || 'Failed to delete course');
-    }
+      setUpdateError(error.message || "Failed to delete course");
+    },
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setUpdateError('');
-    setUpdateSuccess('');
-    
+    setUpdateError("");
+    setUpdateSuccess("");
+
     try {
       await updateCourse({
         variables: {
           id: courseId,
-          input: formData
-        }
+          input: formData,
+        },
       });
       refetch();
     } catch (err) {
-      setUpdateError(err.message || 'An error occurred');
+      setUpdateError(err.message || "An error occurred");
     }
   };
 
@@ -119,11 +120,11 @@ const CourseDetail = ({ courseId }) => {
     try {
       await deleteCourse({
         variables: {
-          id: courseId
-        }
+          id: courseId,
+        },
       });
     } catch (err) {
-      setUpdateError(err.message || 'An error occurred');
+      setUpdateError(err.message || "An error occurred");
     }
   };
 
@@ -139,19 +140,11 @@ const CourseDetail = ({ courseId }) => {
   }
 
   if (error) {
-    return (
-      <Alert variant="danger">
-        Error loading course: {error.message}
-      </Alert>
-    );
+    return <Alert variant="danger">Error loading course: {error.message}</Alert>;
   }
 
   if (!data || !data.course) {
-    return (
-      <Alert variant="warning">
-        Course not found
-      </Alert>
-    );
+    return <Alert variant="warning">Course not found</Alert>;
   }
 
   const { course } = data;
@@ -161,17 +154,10 @@ const CourseDetail = ({ courseId }) => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Course Details</h2>
         <div>
-          <Button 
-            variant="outline-primary" 
-            className="me-2" 
-            onClick={() => setEditing(!editing)}
-          >
-            {editing ? 'Cancel' : 'Edit Course'}
+          <Button variant="outline-primary" className="me-2" onClick={() => setEditing(!editing)}>
+            {editing ? "Cancel" : "Edit Course"}
           </Button>
-          <Button 
-            variant="outline-danger" 
-            onClick={() => setShowDeleteModal(true)}
-          >
+          <Button variant="outline-danger" onClick={() => setShowDeleteModal(true)}>
             Delete Course
           </Button>
         </div>
@@ -188,17 +174,11 @@ const CourseDetail = ({ courseId }) => {
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Course Code</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={course.courseCode}
-                      disabled
-                    />
-                    <Form.Text className="text-muted">
-                      Course code cannot be changed
-                    </Form.Text>
+                    <Form.Control type="text" value={course.courseCode} disabled />
+                    <Form.Text className="text-muted">Course code cannot be changed</Form.Text>
                   </Form.Group>
                 </Col>
-                
+
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Course Name</Form.Label>
@@ -226,7 +206,7 @@ const CourseDetail = ({ courseId }) => {
                     />
                   </Form.Group>
                 </Col>
-                
+
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Semester</Form.Label>
@@ -241,25 +221,30 @@ const CourseDetail = ({ courseId }) => {
                 </Col>
               </Row>
 
-              <Button 
-                variant="primary" 
-                type="submit" 
-                disabled={updating}
-              >
-                {updating ? 'Updating...' : 'Update Course'}
+              <Button variant="primary" type="submit" disabled={updating}>
+                {updating ? "Updating..." : "Update Course"}
               </Button>
             </Form>
           ) : (
             <Row>
               <Col md={6}>
                 <h5>Course Information</h5>
-                <p><strong>Course Code:</strong> {course.courseCode}</p>
-                <p><strong>Course Name:</strong> {course.courseName}</p>
-                <p><strong>Section:</strong> {course.section}</p>
-                <p><strong>Semester:</strong> {course.semester}</p>
+                <p>
+                  <strong>Course Code:</strong> {course.courseCode}
+                </p>
+                <p>
+                  <strong>Course Name:</strong> {course.courseName}
+                </p>
+                <p>
+                  <strong>Section:</strong> {course.section}
+                </p>
+                <p>
+                  <strong>Semester:</strong> {course.semester}
+                </p>
                 <p>
                   <Badge bg="primary" className="me-2">
-                    {course.students.length} Enrolled Student{course.students.length !== 1 ? 's' : ''}
+                    {course.students.length} Enrolled Student
+                    {course.students.length !== 1 ? "s" : ""}
                   </Badge>
                 </p>
               </Col>
@@ -270,9 +255,7 @@ const CourseDetail = ({ courseId }) => {
 
       <h4>Enrolled Students</h4>
       {course.students.length === 0 ? (
-        <Alert variant="info">
-          No students enrolled in this course yet.
-        </Alert>
+        <Alert variant="info">No students enrolled in this course yet.</Alert>
       ) : (
         <Table striped bordered hover responsive className="shadow-sm">
           <thead>
@@ -288,13 +271,15 @@ const CourseDetail = ({ courseId }) => {
             {course.students.map((student) => (
               <tr key={student.id} className="student-list-item">
                 <td>{student.studentNumber}</td>
-                <td>{student.firstName} {student.lastName}</td>
+                <td>
+                  {student.firstName} {student.lastName}
+                </td>
                 <td>{student.email}</td>
                 <td>{student.program}</td>
                 <td>
-                  <Button 
-                    variant="outline-primary" 
-                    size="sm" 
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
                     onClick={() => navigate(`/students/${student.id}`)}
                   >
                     View Profile
@@ -321,12 +306,8 @@ const CourseDetail = ({ courseId }) => {
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>
-          <Button 
-            variant="danger" 
-            onClick={handleDelete} 
-            disabled={deleting}
-          >
-            {deleting ? 'Deleting...' : 'Delete Course'}
+          <Button variant="danger" onClick={handleDelete} disabled={deleting}>
+            {deleting ? "Deleting..." : "Delete Course"}
           </Button>
         </Modal.Footer>
       </Modal>

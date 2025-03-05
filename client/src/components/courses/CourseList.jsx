@@ -1,7 +1,8 @@
-import { useQuery, gql } from '@apollo/client';
-import { Row, Col, Card, Button, Badge, Spinner, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { useQuery, gql } from "@apollo/client";
+import { Row, Col, Card, Button, Badge, Spinner, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
+// Query: GetCourse
 const GET_COURSES = gql`
   query GetCourses {
     courses {
@@ -32,19 +33,13 @@ const CourseList = () => {
   }
 
   if (error) {
-    return (
-      <Alert variant="danger">
-        Error loading courses: {error.message}
-      </Alert>
-    );
+    return <Alert variant="danger">Error loading courses: {error.message}</Alert>;
   }
 
   if (!data || !data.courses || data.courses.length === 0) {
     return (
       <div className="text-center my-5">
-        <Alert variant="info">
-          No courses found. Create a new course to get started.
-        </Alert>
+        <Alert variant="info">No courses found. Create a new course to get started.</Alert>
       </div>
     );
   }
@@ -53,11 +48,11 @@ const CourseList = () => {
     <div>
       <div className="d-flex justify-content-between mb-4">
         <h3>All Courses</h3>
-        <Button 
-          variant="primary" 
-          as={Link} 
-          to="#" 
-          onClick={() => document.getElementById('createCourseForm').scrollIntoView()}
+        <Button
+          variant="primary"
+          as={Link}
+          to="#"
+          onClick={() => document.getElementById("createCourseForm").scrollIntoView()}
         >
           Add New Course
         </Button>
@@ -69,21 +64,24 @@ const CourseList = () => {
             <Card className="h-100 course-card shadow-sm">
               <Card.Body>
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <Badge bg="primary" className="px-3 py-2">{course.courseCode}</Badge>
+                  <Badge bg="primary" className="px-3 py-2">
+                    {course.courseCode}
+                  </Badge>
                   <Badge bg="secondary" className="px-2 py-1">
-                    {course.students.length} student{course.students.length !== 1 ? 's' : ''}
+                    {course.students.length} student{course.students.length !== 1 ? "s" : ""}
                   </Badge>
                 </div>
                 <Card.Title>{course.courseName}</Card.Title>
                 <Card.Text>
-                  <strong>Section:</strong> {course.section}<br />
+                  <strong>Section:</strong> {course.section}
+                  <br />
                   <strong>Semester:</strong> {course.semester}
                 </Card.Text>
                 <div className="d-flex justify-content-between mt-auto">
-                  <Button 
-                    variant="outline-primary" 
-                    size="sm" 
-                    as={Link} 
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    as={Link}
                     to={`/courses/${course.id}`}
                   >
                     View Details

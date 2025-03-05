@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import config from "../config/config.js";
 import Student from "../models/student.model.js";
 import Admin from "../models/admin.model.js";
+import { logger } from "../config/logger.js";
 
 const authMiddleware = async (req) => {
   const authHeader = req.headers.authorization || "";
@@ -16,51 +17,49 @@ const authMiddleware = async (req) => {
   }
 
   const token = parts[1];
-  
+
   try {
     const decoded = jwt.verify(token, config.JWT_SECRET);
-    console.log('Decoded token:', decoded); // Debug token contents
-    
-    // Check explicitly for isAdmin flag
+
     if (decoded.isAdmin === true) {
       const admin = await Admin.findById(decoded.id);
-      
+
       if (!admin) {
-        console.log('Admin not found in database');
+        logger.error("Admin Not Found Within Database.");
         return { user: null };
       }
-      
-      console.log('Authenticated as admin:', admin.email);
+
+      logger.info("Successfully Authenticated as Admin.");
       return {
         user: {
           id: admin._id,
           email: admin.email,
           username: admin.username,
           isAdmin: true,
-          role: 'admin' // Add role explicitly
+          role: "admin",
         },
       };
     } else {
       const student = await Student.findById(decoded.id);
 
       if (!student) {
-        console.log('Student not found in database');
+        logger.error("Student Not Found Within Database.");
         return { user: null };
       }
 
-      console.log('Authenticated as student:', student.email);
+      logger.info("Successfully Authenticated as Student.");
       return {
         user: {
           id: student._id,
           email: student.email,
           studentNumber: student.studentNumber,
           isAdmin: false,
-          role: 'student' // Add role explicitly
+          role: "student",
         },
       };
     }
   } catch (error) {
-    console.error('Authentication error:', error.message);
+    logger.error("Authentication error:", error.message);
     return { user: null };
   }
 };

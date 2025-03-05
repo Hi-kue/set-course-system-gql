@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import { Form, Button, Alert } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useState } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
-    
+
     try {
       const result = await login(email, password);
       if (result.success) {
-        navigate('/');
+        navigate("/");
       } else {
-        setError(result.error || 'Failed to login');
+        setError(result.error || "Failed to login");
       }
     } catch (err) {
-      setError(err.message || 'An unknown error occurred');
+      setError(err.message || "An unknown error occurred");
     } finally {
       setLoading(false);
     }
@@ -34,9 +34,9 @@ const LoginForm = () => {
   return (
     <div className="auth-form">
       <h2 className="text-center mb-4">Login</h2>
-      
+
       {error && <Alert variant="danger">{error}</Alert>}
-      
+
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email address</Form.Label>
@@ -60,19 +60,13 @@ const LoginForm = () => {
           />
         </Form.Group>
 
-        <Button 
-          variant="primary" 
-          type="submit" 
-          className="w-100 mb-3" 
-          disabled={loading}
-        >
-          {loading ? 'Logging in...' : 'Login'}
+        <Button variant="primary" type="submit" className="w-100 mb-3" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </Button>
-        
+
         <div className="text-center">
           <p>
-            Don't have an account?{' '}
-            <Link to="/register">Register here</Link>
+            Don't have an account? <Link to="/register">Register here</Link>
           </p>
         </div>
       </Form>

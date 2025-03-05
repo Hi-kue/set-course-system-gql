@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import config from "./config.js";
+import { logger } from "./logger.js";
 
 mongoose.set("strictQuery", true);
 
@@ -13,12 +14,12 @@ const mongooseOptions = {
 export const connectDB = async () => {
   try {
     const conn = await mongoose.connect(config.MONGODB_URI, mongooseOptions);
-    console.info(
+    logger.info(
       `Mongo Database Server: ${conn.connection.host}:${conn.connection.port}/${conn.connection.name}`,
     );
     return conn;
   } catch (error) {
-    console.error(`Error Connecting to Mongo Server: ${error.message}`);
+    logger.error(`Error Connecting to Mongo Server: ${error.message}`);
     process.exit(1);
   }
 };

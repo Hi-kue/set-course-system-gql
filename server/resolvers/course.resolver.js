@@ -44,7 +44,7 @@ const courseResolvers = {
       if (!context.user) {
         throw new AuthenticationError("You must be logged in to create a course");
       }
-      
+
       // Check if user is admin
       if (!context.user.isAdmin) {
         throw new AuthenticationError("Only admins can create courses");
@@ -70,7 +70,7 @@ const courseResolvers = {
       if (!context.user) {
         throw new AuthenticationError("You must be logged in to update a course");
       }
-      
+
       // Check if user is admin
       if (!context.user.isAdmin) {
         throw new AuthenticationError("Only admins can update courses");
@@ -94,7 +94,7 @@ const courseResolvers = {
       if (!context.user) {
         throw new AuthenticationError("You must be logged in to delete a course");
       }
-      
+
       // Check if user is admin
       if (!context.user.isAdmin) {
         throw new AuthenticationError("Only admins can delete courses");

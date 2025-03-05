@@ -1,25 +1,25 @@
-import { useState } from 'react';
-import { Form, Button, Alert, Row, Col } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useState } from "react";
+import { Form, Button, Alert, Row, Col } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
-    studentNumber: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    address: '',
-    city: '',
-    phoneNumber: '',
-    program: ''
+    studentNumber: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    address: "",
+    city: "",
+    phoneNumber: "",
+    program: "",
   });
-  
-  const [error, setError] = useState('');
+
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -27,23 +27,21 @@ const RegisterForm = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    
-    // Validate passwords match
+    setError("");
+
     if (formData.password !== formData.confirmPassword) {
-      return setError('Passwords do not match');
+      return setError("Passwords do not match");
     }
-    
+
     setLoading(true);
-    
+
     try {
-      // Prepare data for API
       const studentData = {
         studentNumber: formData.studentNumber,
         firstName: formData.firstName,
@@ -53,28 +51,28 @@ const RegisterForm = () => {
         address: formData.address,
         city: formData.city,
         phoneNumber: formData.phoneNumber,
-        program: formData.program
+        program: formData.program,
       };
-      
+
       const result = await register(studentData);
       if (result.success) {
-        navigate('/');
+        navigate("/");
       } else {
-        setError(result.error || 'Failed to register');
+        setError(result.error || "Failed to register");
       }
     } catch (err) {
-      setError(err.message || 'An unknown error occurred');
+      setError(err.message || "An unknown error occurred");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-form" style={{ maxWidth: '700px' }}>
+    <div className="auth-form" style={{ maxWidth: "700px" }}>
       <h2 className="text-center mb-4">Register</h2>
-      
+
       {error && <Alert variant="danger">{error}</Alert>}
-      
+
       <Form onSubmit={handleSubmit}>
         <Row>
           <Col md={6}>
@@ -90,7 +88,7 @@ const RegisterForm = () => {
               />
             </Form.Group>
           </Col>
-          
+
           <Col md={6}>
             <Form.Group className="mb-3" controlId="program">
               <Form.Label>Program</Form.Label>
@@ -120,7 +118,7 @@ const RegisterForm = () => {
               />
             </Form.Group>
           </Col>
-          
+
           <Col md={6}>
             <Form.Group className="mb-3" controlId="lastName">
               <Form.Label>Last Name</Form.Label>
@@ -162,7 +160,7 @@ const RegisterForm = () => {
               />
             </Form.Group>
           </Col>
-          
+
           <Col md={6}>
             <Form.Group className="mb-3" controlId="confirmPassword">
               <Form.Label>Confirm Password</Form.Label>
@@ -202,7 +200,7 @@ const RegisterForm = () => {
               />
             </Form.Group>
           </Col>
-          
+
           <Col md={6}>
             <Form.Group className="mb-3" controlId="phoneNumber">
               <Form.Label>Phone Number</Form.Label>
@@ -217,19 +215,13 @@ const RegisterForm = () => {
           </Col>
         </Row>
 
-        <Button 
-          variant="primary" 
-          type="submit" 
-          className="w-100 mb-3" 
-          disabled={loading}
-        >
-          {loading ? 'Registering...' : 'Register'}
+        <Button variant="primary" type="submit" className="w-100 mb-3" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
         </Button>
-        
+
         <div className="text-center">
           <p>
-            Already have an account?{' '}
-            <Link to="/login">Login here</Link>
+            Already have an account? <Link to="/login">Login here</Link>
           </p>
         </div>
       </Form>

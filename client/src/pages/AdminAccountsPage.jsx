@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Table, Button, Modal, Alert } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, gql } from '@apollo/client';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState } from "react";
+import { Container, Row, Col, Card, Table, Button, Modal, Alert } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { useAuth } from "../hooks/useAuth";
 
+// Query: GetAdmins
 const GET_ADMINS = gql`
   query GetAdmins {
     admins {
@@ -17,6 +18,7 @@ const GET_ADMINS = gql`
   }
 `;
 
+// Mutation: DeleteAdmin
 const DELETE_ADMIN = gql`
   mutation DeleteAdmin($id: ID!) {
     deleteAdmin(id: $id)
@@ -26,50 +28,50 @@ const DELETE_ADMIN = gql`
 const AdminAccountsPage = () => {
   const { isAdmin, user } = useAuth();
   const navigate = useNavigate();
-  
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
-  const [deleteError, setDeleteError] = useState('');
-  const [deleteSuccess, setDeleteSuccess] = useState('');
-  
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteSuccess, setDeleteSuccess] = useState("");
+
   const { loading, error, data, refetch } = useQuery(GET_ADMINS);
-  
+
   const [deleteAdmin] = useMutation(DELETE_ADMIN);
-  
+
   if (!isAdmin) {
-    navigate('/admin/login');
+    navigate("/admin/login");
     return null;
   }
-  
+
   const handleDeleteClick = (admin) => {
     setSelectedAdmin(admin);
     setShowDeleteModal(true);
-    setDeleteError('');
-    setDeleteSuccess('');
+    setDeleteError("");
+    setDeleteSuccess("");
   };
-  
+
   const handleDeleteConfirm = async () => {
     if (!selectedAdmin) return;
-    
+
     try {
       await deleteAdmin({
-        variables: { id: selectedAdmin.id }
+        variables: { id: selectedAdmin.id },
       });
-      
+
       setDeleteSuccess(`Admin ${selectedAdmin.username} deleted successfully`);
       refetch(); // NOTE: Refresh Admin List
       setShowDeleteModal(false);
     } catch (err) {
-      setDeleteError(err.message || 'Failed to delete admin');
+      setDeleteError(err.message || "Failed to delete admin");
     }
   };
-  
+
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
-  
+
   return (
     <Container className="mt-4">
       <Row className="mb-4">
@@ -83,13 +85,13 @@ const AdminAccountsPage = () => {
           </Link>
         </Col>
       </Row>
-      
+
       {deleteSuccess && (
-        <Alert variant="success" dismissible onClose={() => setDeleteSuccess('')}>
+        <Alert variant="success" dismissible onClose={() => setDeleteSuccess("")}>
           {deleteSuccess}
         </Alert>
       )}
-      
+
       <Card>
         <Card.Body>
           {loading ? (
@@ -99,9 +101,7 @@ const AdminAccountsPage = () => {
               </div>
             </div>
           ) : error ? (
-            <Alert variant="danger">
-              Error loading admin accounts: {error.message}
-            </Alert>
+            <Alert variant="danger">Error loading admin accounts: {error.message}</Alert>
           ) : (
             <>
               {data.admins.length === 0 ? (
@@ -120,19 +120,25 @@ const AdminAccountsPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.admins.map(admin => (
+                    {data.admins.map((admin) => (
                       <tr key={admin.id}>
                         <td>{admin.username}</td>
-                        <td>{admin.firstName} {admin.lastName}</td>
+                        <td>
+                          {admin.firstName} {admin.lastName}
+                        </td>
                         <td>{admin.email}</td>
                         <td>{formatDate(admin.createdAt)}</td>
                         <td>
-                          <Button 
-                            variant="outline-danger" 
+                          <Button
+                            variant="outline-danger"
                             size="sm"
                             onClick={() => handleDeleteClick(admin)}
                             disabled={admin.id === user.id} // Prevent self-deletion
-                            title={admin.id === user.id ? "Cannot delete your own account" : "Delete admin"}
+                            title={
+                              admin.id === user.id
+                                ? "Cannot delete your own account"
+                                : "Delete admin"
+                            }
                           >
                             Delete
                           </Button>
@@ -146,18 +152,15 @@ const AdminAccountsPage = () => {
           )}
         </Card.Body>
       </Card>
-      
+
       <Row className="mt-4">
         <Col>
-          <Button 
-            variant="secondary"
-            onClick={() => navigate('/admin/dashboard')}
-          >
+          <Button variant="secondary" onClick={() => navigate("/admin/dashboard")}>
             Back to Dashboard
           </Button>
         </Col>
       </Row>
-      
+
       {/* Delete Confirmation Modal */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
@@ -165,7 +168,10 @@ const AdminAccountsPage = () => {
         </Modal.Header>
         <Modal.Body>
           {deleteError && <Alert variant="danger">{deleteError}</Alert>}
-          <p>Are you sure you want to delete the admin account for <strong>{selectedAdmin?.username}</strong>?</p>
+          <p>
+            Are you sure you want to delete the admin account for{" "}
+            <strong>{selectedAdmin?.username}</strong>?
+          </p>
           <p className="text-danger">This action cannot be undone.</p>
         </Modal.Body>
         <Modal.Footer>

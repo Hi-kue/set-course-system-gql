@@ -27,11 +27,7 @@
     }
   },
   "files": {
-    "ignore": [
-      "./dist",
-      "./coverage",
-      "./node_modules"
-    ]
+    "ignore": ["./dist", "./coverage", "./node_modules"]
   },
   "formatter": {
     "enabled": true,
@@ -139,9 +135,7 @@
   },
   "overrides": [
     {
-      "include": [
-        "src/db/drizzle.config.ts"
-      ],
+      "include": ["src/db/drizzle.config.ts"],
       "linter": {
         "rules": {
           "style": {

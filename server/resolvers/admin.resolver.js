@@ -4,22 +4,17 @@ import config from "../config/config.js";
 import { AuthenticationError, UserInputError, ForbiddenError } from "apollo-server-express";
 
 const generateAdminToken = (admin) => {
-  // Create payload with explicit isAdmin flag
-  const payload = { 
-    id: admin.id, 
-    email: admin.email, 
+  const payload = {
+    id: admin.id,
+    email: admin.email,
     username: admin.username,
     isAdmin: true,
-    role: 'admin'
+    role: "admin",
   };
-  
-  console.log('Generating admin token with payload:', payload);
-  
-  return jwt.sign(
-    payload,
-    config.JWT_SECRET,
-    { expiresIn: config.JWT_EXPIRES_IN }
-  );
+
+  console.log("Generating admin token with payload:", payload);
+
+  return jwt.sign(payload, config.JWT_SECRET, { expiresIn: config.JWT_EXPIRES_IN });
 };
 
 const adminResolvers = {
@@ -47,7 +42,7 @@ const adminResolvers = {
         throw new AuthenticationError("Not authenticated as admin");
       }
       return await Admin.findById(context.user.id);
-    }
+    },
   },
   Mutation: {
     adminLogin: async (_, { input }) => {
@@ -74,7 +69,7 @@ const adminResolvers = {
       if (context.user && !context.user.isAdmin) {
         throw new ForbiddenError("Not authorized to create admin accounts");
       }
-      
+
       const adminCount = await Admin.countDocuments();
       if (adminCount > 0 && !context.user) {
         throw new AuthenticationError("Authentication required to create admin accounts");
@@ -92,7 +87,7 @@ const adminResolvers = {
 
       const admin = new Admin(input);
       await admin.save();
-      
+
       return admin;
     },
     updateAdmin: async (_, { id, input }, context) => {
@@ -107,7 +102,7 @@ const adminResolvers = {
       const admin = await Admin.findByIdAndUpdate(
         id,
         { $set: input },
-        { new: true, runValidators: true }
+        { new: true, runValidators: true },
       );
 
       if (!admin) {
@@ -131,7 +126,7 @@ const adminResolvers = {
       }
 
       const result = await Admin.findByIdAndDelete(id);
-      
+
       if (!result) {
         throw new UserInputError("Admin not found");
       }
@@ -157,8 +152,8 @@ const adminResolvers = {
       await admin.save();
 
       return true;
-    }
-  }
+    },
+  },
 };
 
 export default adminResolvers;

@@ -1,8 +1,9 @@
-import { useQuery, gql } from '@apollo/client';
-import { Table, Spinner, Alert, Button, Badge, Form, InputGroup } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useQuery, gql } from "@apollo/client";
+import { Table, Spinner, Alert, Button, Badge, Form, InputGroup } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
+// Query: GetStudent
 const GET_STUDENTS = gql`
   query GetStudents {
     students {
@@ -21,7 +22,7 @@ const GET_STUDENTS = gql`
 `;
 
 const StudentList = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const { loading, error, data } = useQuery(GET_STUDENTS);
   const navigate = useNavigate();
 
@@ -29,7 +30,7 @@ const StudentList = () => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredStudents = data?.students.filter(student => {
+  const filteredStudents = data?.students.filter((student) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
       student.firstName.toLowerCase().includes(searchTermLower) ||
@@ -52,19 +53,13 @@ const StudentList = () => {
   }
 
   if (error) {
-    return (
-      <Alert variant="danger">
-        Error loading students: {error.message}
-      </Alert>
-    );
+    return <Alert variant="danger">Error loading students: {error.message}</Alert>;
   }
 
   if (!data || !data.students || data.students.length === 0) {
     return (
       <div className="text-center my-5">
-        <Alert variant="info">
-          No students found in the system.
-        </Alert>
+        <Alert variant="info">No students found in the system.</Alert>
       </div>
     );
   }
@@ -72,22 +67,20 @@ const StudentList = () => {
   return (
     <div>
       <h3 className="mb-4">Student Directory</h3>
-      
+
       <InputGroup className="mb-4 shadow-sm">
         <Form.Control
           placeholder="Search by name, student number, email or program..."
           value={searchTerm}
           onChange={handleSearchChange}
         />
-        <Button variant="outline-secondary" onClick={() => setSearchTerm('')}>
+        <Button variant="outline-secondary" onClick={() => setSearchTerm("")}>
           Clear
         </Button>
       </InputGroup>
 
       {filteredStudents?.length === 0 ? (
-        <Alert variant="info">
-          No students found matching your search criteria.
-        </Alert>
+        <Alert variant="info">No students found matching your search criteria.</Alert>
       ) : (
         <Table striped bordered hover responsive className="shadow-sm">
           <thead>
@@ -104,7 +97,9 @@ const StudentList = () => {
             {filteredStudents?.map((student) => (
               <tr key={student.id} className="student-list-item">
                 <td>{student.studentNumber}</td>
-                <td>{student.firstName} {student.lastName}</td>
+                <td>
+                  {student.firstName} {student.lastName}
+                </td>
                 <td>{student.email}</td>
                 <td>{student.program}</td>
                 <td>
@@ -118,17 +113,15 @@ const StudentList = () => {
                         </Badge>
                       ))}
                       {student.courses.length > 3 && (
-                        <Badge bg="secondary">
-                          +{student.courses.length - 3} more
-                        </Badge>
+                        <Badge bg="secondary">+{student.courses.length - 3} more</Badge>
                       )}
                     </div>
                   )}
                 </td>
                 <td>
-                  <Button 
-                    variant="outline-primary" 
-                    size="sm" 
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
                     onClick={() => navigate(`/students/${student.id}`)}
                   >
                     View Details

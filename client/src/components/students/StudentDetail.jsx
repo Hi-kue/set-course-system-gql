@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useQuery, useMutation, gql } from '@apollo/client';
-import { Card, Button, Row, Col, Form, Alert, Spinner, Table, Badge, Modal } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useState } from "react";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { Card, Button, Row, Col, Form, Alert, Spinner, Table, Badge, Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
+// Query: GetStudent
 const GET_STUDENT = gql`
   query GetStudent($id: ID!) {
     student(id: $id) {
@@ -27,6 +28,7 @@ const GET_STUDENT = gql`
   }
 `;
 
+// Mutation: UpdateStudent
 const UPDATE_STUDENT = gql`
   mutation UpdateStudent($id: ID!, $input: UpdateStudentInput!) {
     updateStudent(id: $id, input: $input) {
@@ -41,6 +43,7 @@ const UPDATE_STUDENT = gql`
   }
 `;
 
+// Mutation: RemoveCourseFromStudent
 const REMOVE_COURSE = gql`
   mutation RemoveCourseFromStudent($studentId: ID!, $courseId: ID!) {
     removeCourseFromStudent(studentId: $studentId, courseId: $courseId) {
@@ -55,97 +58,95 @@ const REMOVE_COURSE = gql`
 const StudentDetail = ({ studentId }) => {
   const { user } = useAuth();
   const isOwnProfile = user?.id === studentId;
-  
+
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    address: '',
-    city: '',
-    phoneNumber: '',
-    program: ''
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "",
+    phoneNumber: "",
+    program: "",
   });
-  const [updateError, setUpdateError] = useState('');
-  const [updateSuccess, setUpdateSuccess] = useState('');
-  
+  const [updateError, setUpdateError] = useState("");
+  const [updateSuccess, setUpdateSuccess] = useState("");
+
   const navigate = useNavigate();
-  
+
   const { loading, error, data, refetch } = useQuery(GET_STUDENT, {
     variables: { id: studentId },
     onCompleted: (data) => {
-      // Initialize form data with existing student data
       setFormData({
         firstName: data.student.firstName,
         lastName: data.student.lastName,
-        address: data.student.address || '',
-        city: data.student.city || '',
-        phoneNumber: data.student.phoneNumber || '',
-        program: data.student.program
+        address: data.student.address || "",
+        city: data.student.city || "",
+        phoneNumber: data.student.phoneNumber || "",
+        program: data.student.program,
       });
-    }
+    },
   });
-  
+
   const [updateStudent, { loading: updating }] = useMutation(UPDATE_STUDENT, {
     onCompleted: () => {
-      setUpdateSuccess('Profile updated successfully!');
+      setUpdateSuccess("Profile updated successfully!");
       setEditing(false);
-      // Clear success message after a few seconds
       setTimeout(() => {
-        setUpdateSuccess('');
+        setUpdateSuccess("");
       }, 5000);
     },
     onError: (error) => {
-      setUpdateError(error.message || 'Failed to update profile');
-    }
+      setUpdateError(error.message || "Failed to update profile");
+    },
   });
-  
+
   const [removeCourse, { loading: removing }] = useMutation(REMOVE_COURSE, {
     onCompleted: () => {
       refetch();
     },
     onError: (error) => {
-      setUpdateError(error.message || 'Failed to drop course');
-    }
+      setUpdateError(error.message || "Failed to drop course");
+    },
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setUpdateError('');
-    setUpdateSuccess('');
-    
+    setUpdateError("");
+    setUpdateSuccess("");
+
     try {
       await updateStudent({
         variables: {
           id: studentId,
-          input: formData
-        }
+          input: formData,
+        },
       });
       refetch();
     } catch (err) {
-      setUpdateError(err.message || 'An error occurred');
+      setUpdateError(err.message || "An error occurred");
     }
   };
 
   const handleRemoveCourse = async (courseId) => {
-    setUpdateError('');
-    
+    setUpdateError("");
+
     try {
       await removeCourse({
         variables: {
           studentId,
-          courseId
-        }
+          courseId,
+        },
       });
     } catch (err) {
-      setUpdateError(err.message || 'Failed to drop course');
+      setUpdateError(err.message || "Failed to drop course");
     }
   };
 
@@ -161,19 +162,11 @@ const StudentDetail = ({ studentId }) => {
   }
 
   if (error) {
-    return (
-      <Alert variant="danger">
-        Error loading student profile: {error.message}
-      </Alert>
-    );
+    return <Alert variant="danger">Error loading student profile: {error.message}</Alert>;
   }
 
   if (!data || !data.student) {
-    return (
-      <Alert variant="warning">
-        Student not found
-      </Alert>
-    );
+    return <Alert variant="warning">Student not found</Alert>;
   }
 
   const { student } = data;
@@ -181,15 +174,10 @@ const StudentDetail = ({ studentId }) => {
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>
-          {isOwnProfile ? 'My Profile' : 'Student Profile'}
-        </h2>
+        <h2>{isOwnProfile ? "My Profile" : "Student Profile"}</h2>
         {isOwnProfile && (
-          <Button 
-            variant="outline-primary" 
-            onClick={() => setEditing(!editing)}
-          >
-            {editing ? 'Cancel' : 'Edit Profile'}
+          <Button variant="outline-primary" onClick={() => setEditing(!editing)}>
+            {editing ? "Cancel" : "Edit Profile"}
           </Button>
         )}
       </div>
@@ -214,7 +202,7 @@ const StudentDetail = ({ studentId }) => {
                     />
                   </Form.Group>
                 </Col>
-                
+
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Last Name</Form.Label>
@@ -242,7 +230,7 @@ const StudentDetail = ({ studentId }) => {
                     />
                   </Form.Group>
                 </Col>
-                
+
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Phone Number</Form.Label>
@@ -276,29 +264,39 @@ const StudentDetail = ({ studentId }) => {
                 />
               </Form.Group>
 
-              <Button 
-                variant="primary" 
-                type="submit" 
-                disabled={updating}
-              >
-                {updating ? 'Updating...' : 'Update Profile'}
+              <Button variant="primary" type="submit" disabled={updating}>
+                {updating ? "Updating..." : "Update Profile"}
               </Button>
             </Form>
           ) : (
             <Row>
               <Col md={6} className="profile-info">
                 <h5>Student Information</h5>
-                <p><strong>Student Number:</strong> {student.studentNumber}</p>
-                <p><strong>Name:</strong> {student.firstName} {student.lastName}</p>
-                <p><strong>Email:</strong> {student.email}</p>
-                <p><strong>Program:</strong> {student.program}</p>
+                <p>
+                  <strong>Student Number:</strong> {student.studentNumber}
+                </p>
+                <p>
+                  <strong>Name:</strong> {student.firstName} {student.lastName}
+                </p>
+                <p>
+                  <strong>Email:</strong> {student.email}
+                </p>
+                <p>
+                  <strong>Program:</strong> {student.program}
+                </p>
               </Col>
-              
+
               <Col md={6} className="profile-info">
                 <h5>Contact Information</h5>
-                <p><strong>Phone:</strong> {student.phoneNumber || 'Not provided'}</p>
-                <p><strong>Address:</strong> {student.address || 'Not provided'}</p>
-                <p><strong>City:</strong> {student.city || 'Not provided'}</p>
+                <p>
+                  <strong>Phone:</strong> {student.phoneNumber || "Not provided"}
+                </p>
+                <p>
+                  <strong>Address:</strong> {student.address || "Not provided"}
+                </p>
+                <p>
+                  <strong>City:</strong> {student.city || "Not provided"}
+                </p>
               </Col>
             </Row>
           )}
@@ -306,11 +304,11 @@ const StudentDetail = ({ studentId }) => {
       </Card>
 
       <h4>Registered Courses</h4>
-      
+
       {student.courses.length === 0 ? (
         <Alert variant="info">
-          {isOwnProfile 
-            ? "You are not registered for any courses yet." 
+          {isOwnProfile
+            ? "You are not registered for any courses yet."
             : "This student is not registered for any courses yet."}
         </Alert>
       ) : (
@@ -333,9 +331,9 @@ const StudentDetail = ({ studentId }) => {
                 <td>{course.semester}</td>
                 {isOwnProfile && (
                   <td>
-                    <Button 
-                      variant="outline-danger" 
-                      size="sm" 
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
                       onClick={() => handleRemoveCourse(course.id)}
                       disabled={removing}
                     >
@@ -348,13 +346,10 @@ const StudentDetail = ({ studentId }) => {
           </tbody>
         </Table>
       )}
-      
+
       {isOwnProfile && (
         <div className="mt-4">
-          <Button 
-            variant="primary" 
-            onClick={() => navigate('/courses')}
-          >
+          <Button variant="primary" onClick={() => navigate("/courses")}>
             Browse Available Courses
           </Button>
         </div>

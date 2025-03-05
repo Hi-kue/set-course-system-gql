@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Alert, Button, Row, Col } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
-import StudentDetail from '../components/students/StudentDetail';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState, useEffect } from "react";
+import { Container, Alert, Button, Row, Col } from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
+import StudentDetail from "../components/students/StudentDetail";
+import { useAuth } from "../hooks/useAuth";
 
 const StudentDetailsPage = () => {
   const { id } = useParams();
@@ -13,8 +13,8 @@ const StudentDetailsPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      setError('You do not have permission to view this page');
+    if (!user || user.role !== "admin") {
+      setError("You do not have permission to view this page");
       setLoading(false);
       return;
     }
@@ -23,14 +23,14 @@ const StudentDetailsPage = () => {
       try {
         const response = await fetch(`/api/students/${id}`);
         const data = await response.json();
-        
+
         if (data.success) {
           setStudent(data.student);
         } else {
-          setError(data.error || 'Failed to fetch student details');
+          setError(data.error || "Failed to fetch student details");
         }
       } catch (err) {
-        setError('Error fetching student details. Please try again later.');
+        setError("Error fetching student details. Please try again later.");
         console.error(err);
       } finally {
         setLoading(false);
@@ -54,7 +54,9 @@ const StudentDetailsPage = () => {
     return (
       <Container>
         <Alert variant="danger">{error}</Alert>
-        <Button variant="secondary" onClick={() => navigate(-1)}>Back</Button>
+        <Button variant="secondary" onClick={() => navigate(-1)}>
+          Back
+        </Button>
       </Container>
     );
   }
@@ -63,7 +65,9 @@ const StudentDetailsPage = () => {
     return (
       <Container>
         <Alert variant="warning">Student not found</Alert>
-        <Button variant="secondary" onClick={() => navigate('/students')}>Back to Students</Button>
+        <Button variant="secondary" onClick={() => navigate("/students")}>
+          Back to Students
+        </Button>
       </Container>
     );
   }
@@ -75,10 +79,7 @@ const StudentDetailsPage = () => {
           <h1>Student Details</h1>
         </Col>
         <Col xs="auto">
-          <Button 
-            variant="secondary" 
-            onClick={() => navigate(-1)}
-          >
+          <Button variant="secondary" onClick={() => navigate(-1)}>
             Back
           </Button>
         </Col>

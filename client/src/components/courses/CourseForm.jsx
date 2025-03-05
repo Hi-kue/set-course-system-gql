@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { useMutation, gql } from '@apollo/client';
-import { Form, Button, Alert, Card } from 'react-bootstrap';
+import { useState } from "react";
+import { useMutation, gql } from "@apollo/client";
+import { Form, Button, Alert, Card } from "react-bootstrap";
 
+// Mutation: CreateCourse
 const CREATE_COURSE = gql`
   mutation CreateCourse($input: CreateCourseInput!) {
     createCourse(input: $input) {
@@ -16,60 +17,60 @@ const CREATE_COURSE = gql`
 
 const CourseForm = ({ onCourseCreated }) => {
   const [formData, setFormData] = useState({
-    courseCode: '',
-    courseName: '',
-    section: '',
-    semester: ''
+    courseCode: "",
+    courseName: "",
+    section: "",
+    semester: "",
   });
-  
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const [createCourse, { loading }] = useMutation(CREATE_COURSE, {
     onCompleted: (data) => {
       setSuccess(`Course "${data.createCourse.courseName}" created successfully!`);
       setFormData({
-        courseCode: '',
-        courseName: '',
-        section: '',
-        semester: ''
+        courseCode: "",
+        courseName: "",
+        section: "",
+        semester: "",
       });
-      
+
       if (onCourseCreated) {
         onCourseCreated(data.createCourse);
       }
-      
+
       // Clear success message after a few seconds
       setTimeout(() => {
-        setSuccess('');
+        setSuccess("");
       }, 5000);
     },
     onError: (error) => {
-      setError(error.message || 'Failed to create course');
-    }
+      setError(error.message || "Failed to create course");
+    },
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-    
+    setError("");
+    setSuccess("");
+
     try {
       await createCourse({
         variables: {
-          input: formData
-        }
+          input: formData,
+        },
       });
     } catch (err) {
-      setError(err.message || 'An error occurred');
+      setError(err.message || "An error occurred");
     }
   };
 
@@ -77,10 +78,10 @@ const CourseForm = ({ onCourseCreated }) => {
     <Card className="shadow-sm mb-4" id="createCourseForm">
       <Card.Body>
         <h3 className="mb-3">Add New Course</h3>
-        
+
         {error && <Alert variant="danger">{error}</Alert>}
         {success && <Alert variant="success">{success}</Alert>}
-        
+
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="courseCode">
             <Form.Label>Course Code</Form.Label>
@@ -92,9 +93,7 @@ const CourseForm = ({ onCourseCreated }) => {
               onChange={handleChange}
               required
             />
-            <Form.Text className="text-muted">
-              Unique identifier for the course
-            </Form.Text>
+            <Form.Text className="text-muted">Unique identifier for the course</Form.Text>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="courseName">
@@ -133,12 +132,8 @@ const CourseForm = ({ onCourseCreated }) => {
             />
           </Form.Group>
 
-          <Button 
-            variant="primary" 
-            type="submit" 
-            disabled={loading}
-          >
-            {loading ? 'Creating...' : 'Create Course'}
+          <Button variant="primary" type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Create Course"}
           </Button>
         </Form>
       </Card.Body>

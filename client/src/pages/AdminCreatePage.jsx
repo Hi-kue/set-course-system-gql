@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { useMutation, gql } from '@apollo/client';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState } from "react";
+import { Container, Row, Col, Card, Form, Button, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useMutation, gql } from "@apollo/client";
+import { useAuth } from "../hooks/useAuth";
 
+// Query: createAdmin
 const CREATE_ADMIN_MUTATION = gql`
   mutation CreateAdmin($input: AdminCreateInput!) {
     createAdmin(input: $input) {
@@ -18,99 +19,98 @@ const CREATE_ADMIN_MUTATION = gql`
 
 const AdminCreatePage = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    firstName: '',
-    lastName: ''
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
   });
-  
+
   const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState('');
+  const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  
+
   const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
-  
+
   const [createAdmin] = useMutation(CREATE_ADMIN_MUTATION);
-  
-  // Check authentication on component mount
+
   useEffect(() => {
-    console.log('Current user:', user);
-    console.log('Is admin?', isAdmin);
-    
+    console.log("Current user:", user);
+    console.log("Is admin?", isAdmin);
+
     if (!isAdmin) {
-      console.log('Not authenticated as admin, redirecting');
-      navigate('/admin/login');
+      console.log("Not authenticated as admin, redirecting");
+      navigate("/admin/login");
     }
   }, [isAdmin, navigate, user]);
-  
+
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
+      newErrors.username = "Username is required";
     } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
+      newErrors.username = "Username must be at least 3 characters";
     }
-    
+
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = "Email is invalid";
     }
-    
+
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = "Password must be at least 6 characters";
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = "Passwords do not match";
     }
-    
+
     if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+      newErrors.firstName = "First name is required";
     }
-    
+
     if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
+      newErrors.lastName = "Last name is required";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
-    
+
     if (errors[name]) {
-      setErrors(prevErrors => ({
+      setErrors((prevErrors) => ({
         ...prevErrors,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    setServerError('');
+
+    setServerError("");
     setSuccess(false);
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
       const { data } = await createAdmin({
         variables: {
@@ -119,33 +119,31 @@ const AdminCreatePage = () => {
             email: formData.email,
             password: formData.password,
             firstName: formData.firstName,
-            lastName: formData.lastName
-          }
-        }
+            lastName: formData.lastName,
+          },
+        },
       });
-      
+
       setSuccess(true);
       setFormData({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        firstName: '',
-        lastName: ''
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        firstName: "",
+        lastName: "",
       });
-      
-      // Redirect after 2 seconds
+
       setTimeout(() => {
-        navigate('/admin/dashboard');
+        navigate("/admin/dashboard");
       }, 2000);
-      
     } catch (error) {
-      setServerError(error.message || 'Failed to create admin account');
+      setServerError(error.message || "Failed to create admin account");
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
     <Container>
       <Row className="justify-content-md-center mt-5">
@@ -153,10 +151,10 @@ const AdminCreatePage = () => {
           <Card>
             <Card.Body>
               <h2 className="text-center mb-4">Create Admin Account</h2>
-              
+
               {serverError && <Alert variant="danger">{serverError}</Alert>}
               {success && <Alert variant="success">Admin account created successfully!</Alert>}
-              
+
               <Form onSubmit={handleSubmit}>
                 <Row>
                   <Col md={6}>
@@ -175,7 +173,7 @@ const AdminCreatePage = () => {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
-                  
+
                   <Col md={6}>
                     <Form.Group className="mb-3" controlId="email">
                       <Form.Label>Email address</Form.Label>
@@ -187,13 +185,11 @@ const AdminCreatePage = () => {
                         onChange={handleChange}
                         isInvalid={!!errors.email}
                       />
-                      <Form.Control.Feedback type="invalid">
-                        {errors.email}
-                      </Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
-                
+
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3" controlId="firstName">
@@ -211,7 +207,7 @@ const AdminCreatePage = () => {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
-                  
+
                   <Col md={6}>
                     <Form.Group className="mb-3" controlId="lastName">
                       <Form.Label>Last Name</Form.Label>
@@ -229,7 +225,7 @@ const AdminCreatePage = () => {
                     </Form.Group>
                   </Col>
                 </Row>
-                
+
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3" controlId="password">
@@ -247,7 +243,7 @@ const AdminCreatePage = () => {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
-                  
+
                   <Col md={6}>
                     <Form.Group className="mb-3" controlId="confirmPassword">
                       <Form.Label>Confirm Password</Form.Label>
@@ -265,20 +261,15 @@ const AdminCreatePage = () => {
                     </Form.Group>
                   </Col>
                 </Row>
-                
-                <Button 
-                  variant="primary" 
-                  type="submit" 
-                  className="w-100 mt-3"
-                  disabled={loading}
-                >
-                  {loading ? 'Creating...' : 'Create Admin Account'}
+
+                <Button variant="primary" type="submit" className="w-100 mt-3" disabled={loading}>
+                  {loading ? "Creating..." : "Create Admin Account"}
                 </Button>
-                
-                <Button 
-                  variant="outline-secondary" 
+
+                <Button
+                  variant="outline-secondary"
                   className="w-100 mt-3"
-                  onClick={() => navigate('/admin/dashboard')}
+                  onClick={() => navigate("/admin/dashboard")}
                 >
                   Back to Dashboard
                 </Button>
